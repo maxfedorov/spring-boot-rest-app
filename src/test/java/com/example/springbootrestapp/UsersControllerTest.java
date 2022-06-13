@@ -4,6 +4,9 @@ import com.example.springbootrestapp.entity.User;
 import com.example.springbootrestapp.repositories.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.javafaker.Faker;
+import io.qameta.allure.Epic;
+import io.qameta.allure.Feature;
+import io.qameta.allure.Story;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -32,7 +35,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
-@DisplayName("User controller test")
+@Epic("Users")
+@Feature("Controller")
+@Story("Spring MVC")
 public class UsersControllerTest {
 
     @MockBean
