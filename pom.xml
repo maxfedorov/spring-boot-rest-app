@@ -120,6 +120,11 @@
             <artifactId>allure-rest-assured</artifactId>
             <version>2.18.1</version>
         </dependency>
+        <dependency>
+            <groupId>io.qameta.allure</groupId>
+            <artifactId>allure-okhttp3</artifactId>
+            <version>2.18.1</version>
+        </dependency>
     </dependencies>
     <dependencyManagement>
         <dependencies>

@@ -29,7 +29,7 @@ public class RetrofitUsersControllerTest {
     @Test
     @DisplayName("Get users")
     void getUsers() throws IOException {
-        Response<List<User>> response = service.get().getUsers().execute();
+        Response<List<User>> response = step("Send request to get users", () -> service.get().getUsers().execute());
         step("Assert that response is successful", () -> assertThat(response.isSuccessful()).isTrue());
         step("Assert that list of users is returned", () -> assertThat(response.body()).hasSizeGreaterThanOrEqualTo(1));
     }
@@ -44,7 +44,7 @@ public class RetrofitUsersControllerTest {
                 .email("jp@email.com")
                 .build();
 
-        Response<User> response = service.get().getUser(1L).execute();
+        Response<User> response = step("Send request to get user", () -> service.get().getUser(1L).execute());
         step("Assert that response is successful", () -> assertThat(response.isSuccessful()).isTrue());
         step("Assert that user is returned", () -> assertThat(response.body()).isEqualTo(user));
     }
@@ -52,7 +52,7 @@ public class RetrofitUsersControllerTest {
     @ParameterizedTest(name = "get user {0}")
     @ValueSource(longs = {-1, 0, Integer.MAX_VALUE})
     void getUserNotFound(long id) throws IOException {
-        Response<User> response = service.get().getUser(id).execute();
+        Response<User> response = step("Send request to get user", () -> service.get().getUser(id).execute());
         step("Assert that response is Not found", () -> assertThat(response.code()).isEqualTo(404));
     }
 
@@ -66,7 +66,7 @@ public class RetrofitUsersControllerTest {
                 .email("jp@email.com")
                 .build();
 
-        Response<User> response = service.get().addUser(user).execute();
+        Response<User> response = step("Send request to create user", () -> service.get().addUser(user).execute());
         step("Assert that response is successful", () -> assertThat(response.isSuccessful()).isTrue());
         step("Assert that user is returned", () -> assertThat(response.body()).isEqualTo(user));
     }
@@ -80,7 +80,7 @@ public class RetrofitUsersControllerTest {
                 .lastName("Parker")
                 .email("jp@email.com")
                 .build();
-        Response<User> response = service.get().updateUser(1L, user).execute();
+        Response<User> response = step("Send request to update user", () -> service.get().updateUser(1L, user).execute());
         step("Assert that response is successful", () -> assertThat(response.isSuccessful()).isTrue());
         step("Assert that user is returned", () -> assertThat(response.body()).isEqualTo(user));
     }
