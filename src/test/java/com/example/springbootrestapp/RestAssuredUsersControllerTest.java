@@ -29,13 +29,13 @@ public class RestAssuredUsersControllerTest {
     @Test
     @DisplayName("Get users")
     void getUsers() {
-        User[] users = spec.get()
+        User[] users = step("Send request to get users", () -> spec.get()
                 .when()
                 .get("/users")
                 .then()
                 .statusCode(200)
                 .extract()
-                .as(User[].class);
+                .as(User[].class));
         step("Assert that list of users is returned", () -> assertThat(users).hasSizeGreaterThanOrEqualTo(1));
     }
 
@@ -48,23 +48,23 @@ public class RestAssuredUsersControllerTest {
                 .lastName("Parker")
                 .email("jp@email.com")
                 .build();
-        User response = spec.get()
+        User response = step("Send request to get user by id", () -> spec.get()
                 .when()
                 .get("/users/1")
                 .then()
                 .statusCode(200)
                 .extract()
-                .as(User.class);
+                .as(User.class));
         step("Assert user in response", () -> assertThat(response).isEqualTo(user));
     }
 
     @ParameterizedTest(name = "Get user {0}")
     @ValueSource(ints = {-1, 0, Integer.MAX_VALUE})
     void getUserNotFound(int id) {
-        spec.get().when()
+        step("Send request to get user by id " + id, () -> spec.get().when()
                 .get(String.format("/users/%s", id))
                 .then()
-                .statusCode(404);
+                .statusCode(404));
     }
 
     @Test
@@ -76,7 +76,7 @@ public class RestAssuredUsersControllerTest {
                 .lastName("Parker")
                 .email("jp@email.com")
                 .build();
-        User response = spec.get()
+        User response = step("Send request to create user", () -> spec.get()
                 .contentType(JSON)
                 .when()
                 .body(asJson(user))
@@ -84,7 +84,7 @@ public class RestAssuredUsersControllerTest {
                 .then()
                 .statusCode(200)
                 .extract()
-                .as(User.class);
+                .as(User.class));
         step("Assert user in response", () -> assertThat(response).isEqualTo(user));
     }
 
@@ -97,7 +97,7 @@ public class RestAssuredUsersControllerTest {
                 .lastName("Parker")
                 .email("jp@email.com")
                 .build();
-        spec.get().contentType(JSON)
+        step("Send request to update user", () -> spec.get().contentType(JSON)
                 .body(asJson(user))
                 .when()
                 .put("/users/1")
@@ -106,7 +106,7 @@ public class RestAssuredUsersControllerTest {
                 .body("id", is((int) user.getId()))
                 .body("firstName", is(user.getFirstName()))
                 .body("lastName", is(user.getLastName()))
-                .body("email", is(user.getEmail()));
+                .body("email", is(user.getEmail())));
     }
 
     @SneakyThrows
