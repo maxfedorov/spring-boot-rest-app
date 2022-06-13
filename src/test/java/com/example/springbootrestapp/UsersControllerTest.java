@@ -73,7 +73,7 @@ public class UsersControllerTest {
                 .andExpect(status().isNotFound());
     }
 
-    @ParameterizedTest(name = "Update todo item ${0}")
+    @ParameterizedTest(name = "Create user {0}")
     @MethodSource("args")
     @DisplayName("Create user")
     void shouldCreateUser(User user) throws Exception {
