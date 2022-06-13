@@ -1,6 +1,6 @@
 ### Spring boot app with REST API
 
-- Java, RestAssured, Retrofit, SpringMVC, Mockito
+- Java, RestAssured, Retrofit, SpringMVC, Mockito, Allure, Gatling
 - Run app: `mvn spring-boot:run`
 - Allure report: `mvn allure:serve`
 - Run tests: `mvn clean test`
