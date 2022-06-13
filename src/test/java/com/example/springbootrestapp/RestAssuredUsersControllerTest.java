@@ -3,22 +3,31 @@ package com.example.springbootrestapp;
 import com.example.springbootrestapp.entity.User;
 import com.example.springbootrestapp.restassured.Spec;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.qameta.allure.Epic;
+import io.qameta.allure.Feature;
+import io.qameta.allure.Story;
 import lombok.SneakyThrows;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
+import static io.qameta.allure.Allure.step;
 import static io.restassured.http.ContentType.JSON;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.is;
 
+@Epic("Users")
+@Feature("API")
+@Story("Rest Assured")
 public class RestAssuredUsersControllerTest {
 
     @RegisterExtension
     static Spec spec = new Spec();
 
     @Test
+    @DisplayName("Get users")
     void getUsers() {
         User[] users = spec.get()
                 .when()
@@ -27,10 +36,11 @@ public class RestAssuredUsersControllerTest {
                 .statusCode(200)
                 .extract()
                 .as(User[].class);
-        assertThat(users).hasSizeGreaterThanOrEqualTo(1);
+        step("Assert that list of users is returned", () -> assertThat(users).hasSizeGreaterThanOrEqualTo(1));
     }
 
     @Test
+    @DisplayName("Get user by id")
     void getUser() {
         User user = User.builder()
                 .id(1)
@@ -45,10 +55,10 @@ public class RestAssuredUsersControllerTest {
                 .statusCode(200)
                 .extract()
                 .as(User.class);
-        assertThat(response).isEqualTo(user);
+        step("Assert user in response", () -> assertThat(response).isEqualTo(user));
     }
 
-    @ParameterizedTest
+    @ParameterizedTest(name = "Get user {0}")
     @ValueSource(ints = {-1, 0, Integer.MAX_VALUE})
     void getUserNotFound(int id) {
         spec.get().when()
@@ -58,6 +68,7 @@ public class RestAssuredUsersControllerTest {
     }
 
     @Test
+    @DisplayName("Create user")
     void postUser() {
         User user = User.builder()
                 .id(1)
@@ -74,11 +85,11 @@ public class RestAssuredUsersControllerTest {
                 .statusCode(200)
                 .extract()
                 .as(User.class);
-        assertThat(response).isEqualTo(user);
-
+        step("Assert user in response", () -> assertThat(response).isEqualTo(user));
     }
 
     @Test
+    @DisplayName("Update user")
     void putUser() {
         User user = User.builder()
                 .id(1)

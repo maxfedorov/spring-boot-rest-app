@@ -12,7 +12,7 @@ public class Spec implements BeforeAllCallback {
     @Override
     public void beforeAll(ExtensionContext extensionContext) {
         spec = with()
-                .baseUri("http://localhost:8081")
+                .baseUri("http://localhost:8080")
                 .basePath("/api/v1");
     }
 

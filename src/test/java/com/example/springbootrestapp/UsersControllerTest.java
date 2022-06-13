@@ -75,7 +75,6 @@ public class UsersControllerTest {
 
     @ParameterizedTest(name = "Create user {0}")
     @MethodSource("args")
-    @DisplayName("Create user")
     void shouldCreateUser(User user) throws Exception {
         when(repository.save(user)).thenReturn(user);
         mockMvc.perform(post("/api/v1/users")

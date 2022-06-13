@@ -11,7 +11,7 @@ public class Service implements BeforeAllCallback {
     @Override
     public void beforeAll(ExtensionContext extensionContext) {
         service = new Retrofit.Builder()
-                .baseUrl("http://localhost:8081")
+                .baseUrl("http://localhost:8080")
                 .addConverterFactory(GsonConverterFactory.create())
                 .build()
                 .create(UsersService.class);
