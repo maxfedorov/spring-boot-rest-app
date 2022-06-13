@@ -1,97 +1,109 @@
 package com.example.springbootrestapp;
 
 import com.example.springbootrestapp.entity.User;
+import com.example.springbootrestapp.repositories.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.restassured.specification.RequestSpecification;
+import com.github.javafaker.Faker;
 import lombok.SneakyThrows;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.web.servlet.MockMvc;
 
-import static io.restassured.RestAssured.with;
-import static io.restassured.http.ContentType.JSON;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.is;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Stream;
 
+import static java.util.Arrays.asList;
+import static org.junit.jupiter.api.Named.of;
+import static org.junit.jupiter.params.provider.Arguments.arguments;
+import static org.mockito.Mockito.when;
+import static org.springframework.http.MediaType.APPLICATION_JSON;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+@SpringBootTest
+@AutoConfigureMockMvc
+@DisplayName("User controller test")
 public class UsersControllerTest {
 
-    static RequestSpecification spec;
+    @MockBean
+    private UserRepository repository;
 
-    @BeforeAll
-    static void setup() {
-        spec = with()
-                .baseUri("http://localhost:8080")
-                .basePath("/api/v1");
+    @Autowired
+    private MockMvc mockMvc;
+
+    @Test
+    @DisplayName("Get list of users")
+    void shouldReturnListOfUsers() throws Exception {
+        List<User> users = asList(
+                User.builder()
+                        .id(1L)
+                        .firstName(new Faker().address().firstName())
+                        .lastName(new Faker().address().lastName())
+                        .email(new Faker().internet().emailAddress())
+                        .build(),
+                User.builder()
+                        .id(2L)
+                        .firstName(new Faker().address().firstName())
+                        .lastName(new Faker().address().lastName())
+                        .email(new Faker().internet().emailAddress())
+                        .build()
+        );
+        when(repository.findAll()).thenReturn(users);
+        mockMvc.perform(get("/api/v1/users"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(APPLICATION_JSON))
+                .andExpect(content().json(asJson(users)));
     }
 
     @Test
-    void getUsers() {
-        User[] users = spec
-                .when()
-                .get("/users")
-                .then()
-                .statusCode(200)
-                .extract()
-                .as(User[].class);
-        assertThat(users).hasSizeGreaterThanOrEqualTo(1);
+    @DisplayName("Get non existing user")
+    void shouldReturn404ForUserNotFound() throws Exception {
+        when(repository.findById(123L)).thenReturn(Optional.empty());
+        mockMvc.perform(get("/api/v1/users/123"))
+                .andExpect(status().isNotFound());
     }
 
-    @Test
-    void getUser() {
-        User user = User.builder()
-                .id(1)
-                .firstName("John")
-                .lastName("Parker")
-                .email("jp@email.com")
-                .build();
-        User response = spec
-                .when()
-                .get("/users/1")
-                .then()
-                .statusCode(200)
-                .extract()
-                .as(User.class);
-        assertThat(response).isEqualTo(user);
+    @ParameterizedTest(name = "Update todo item ${0}")
+    @MethodSource("args")
+    @DisplayName("Create user")
+    void shouldCreateUser(User user) throws Exception {
+        when(repository.save(user)).thenReturn(user);
+        mockMvc.perform(post("/api/v1/users")
+                .contentType(APPLICATION_JSON)
+                .content(asJson(user)))
+                .andExpect(status().isOk());
     }
 
-    @Test
-    void postUser() {
-        User user = User.builder()
-                .id(1)
-                .firstName("John")
-                .lastName("Parker")
-                .email("jp@email.com")
-                .build();
-        User response = spec
-                .contentType(JSON)
-                .when()
-                .body(asJson(user))
-                .post("/users")
-                .then()
-                .statusCode(200)
-                .extract()
-                .as(User.class);
-        assertThat(response).isEqualTo(user);
-
-    }
-
-    @Test
-    void putUser() {
-        User user = User.builder()
-                .id(1)
-                .firstName("John")
-                .lastName("Parker")
-                .email("jp@email.com")
-                .build();
-        spec.contentType(JSON)
-                .body(asJson(user))
-                .when()
-                .put("/users/1")
-                .then()
-                .statusCode(200)
-                .body("id", is((int) user.getId()))
-                .body("firstName", is(user.getFirstName()))
-                .body("lastName", is(user.getLastName()))
-                .body("email", is(user.getEmail()));
+    static Stream<Arguments> args() {
+        return Stream.of(
+                arguments(of("With all fields", User.builder()
+                        .firstName(new Faker().address().firstName())
+                        .lastName(new Faker().address().lastName())
+                        .email(new Faker().internet().emailAddress())
+                        .build())),
+                arguments(of("Without firstname", User.builder()
+                        .lastName(new Faker().address().lastName())
+                        .email(new Faker().internet().emailAddress())
+                        .build())),
+                arguments(of("Without lastname", User.builder()
+                        .firstName(new Faker().address().firstName())
+                        .email(new Faker().internet().emailAddress())
+                        .build())),
+                arguments(of("Without email", User.builder()
+                        .firstName(new Faker().address().firstName())
+                        .lastName(new Faker().address().lastName())
+                        .build()))
+        );
     }
 
     @SneakyThrows
