@@ -6,7 +6,9 @@ import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.BeforeEachCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
 
+import static com.example.springbootrestapp.config.Config.getPort;
 import static io.restassured.RestAssured.with;
+import static java.lang.String.format;
 
 public class Spec implements BeforeEachCallback {
     static RequestSpecification spec;
@@ -16,7 +18,7 @@ public class Spec implements BeforeEachCallback {
         spec = with()
                 .given()
                 .filter(new AllureRestAssured())
-                .baseUri("http://localhost:8080")
+                .baseUri(format("http://localhost:%s", getPort()))
                 .basePath("/api/v1");
     }
 

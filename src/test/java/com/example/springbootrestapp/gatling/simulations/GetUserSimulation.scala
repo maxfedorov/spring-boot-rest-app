@@ -1,5 +1,6 @@
 package com.example.springbootrestapp.gatling.simulations
 
+import com.example.springbootrestapp.config.Config.getPort
 import io.gatling.core.Predef._
 import io.gatling.core.structure.ScenarioBuilder
 import io.gatling.http.Predef._
@@ -9,7 +10,7 @@ import scala.concurrent.duration.DurationInt
 
 class GetUserSimulation extends Simulation {
 
-  val httpConf: HttpProtocolBuilder = http.baseUrl("http://localhost:8080/api/v1/")
+  val httpConf: HttpProtocolBuilder = http.baseUrl(String.format("http://localhost:%s/api/v1/", getPort))
     .header("Accept", "application/json")
 
   val scn: ScenarioBuilder = scenario("Get user")
