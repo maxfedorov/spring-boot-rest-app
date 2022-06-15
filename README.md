@@ -15,5 +15,5 @@
 
 ### Requirements
 
-- Java
+- Java 11
 - MySQL
