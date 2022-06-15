@@ -2,6 +2,8 @@
 
 - Java, RestAssured, Retrofit, SpringMVC, Mockito, Allure, Cypress, Gatling
 - Run app: `mvn spring-boot:run`
+- Run app in Docker container: `make run`
+- Stor and remove Docker containers: `make stop`
 - Run tests: `mvn clean test`
 - Run cypress: `npx cypress open`
 - Run Gatling tests: `mvn gatling:test`
