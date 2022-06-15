@@ -17,3 +17,4 @@
 
 - Java 11
 - MySQL
+- Docker
