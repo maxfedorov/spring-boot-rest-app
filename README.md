@@ -1,6 +1,6 @@
 ### Spring boot app with REST API
 
-- Java, RestAssured, Retrofit, SpringMVC, Mockito, Allure, Cypress, Gatling
+- Java, RestAssured, Retrofit, MockMvc, Mockito, Allure, Cypress, Gatling
 - Run app: `mvn spring-boot:run`
 - Run app in Docker container: `make run`
 - Stor and remove Docker containers: `make stop`
